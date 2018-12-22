@@ -1,5 +1,7 @@
 package com.efen.simplemp3player;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -42,6 +44,7 @@ public class MusicService extends Service implements
         return musicBind;
     }
 
+
     @Override
     public boolean onUnbind(Intent intent){
         player.stop();
@@ -66,16 +69,40 @@ public class MusicService extends Service implements
     @Override
     public void onCompletion(MediaPlayer mp) {
 
+        if(player.getCurrentPosition()>0){
+            mp.reset();
+            playNext();
+        }
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        mp.reset();
         return false;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
             mp.start();
+
+            Song curson = songs.get(songPosn);
+
+        Intent notIntent = new Intent(this, MP3Player.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(this);
+
+        builder.setContentIntent(pendInt)
+                .setSmallIcon(R.drawable.ic_play)
+                .setTicker(curson.getTitle())
+                .setOngoing(true)
+                .setContentTitle("Playing")
+  .setContentText(curson.getTitle());
+        Notification not = builder.build();
+
+        startForeground(1, not);
     }
 
     public MediaPlayer getPlayer() {
@@ -121,5 +148,47 @@ public class MusicService extends Service implements
         songPosn=songIndex;
     }
 
+    public int getPosn(){
+        return player.getCurrentPosition();
+    }
+
+    public int getDur(){
+        return player.getDuration();
+    }
+
+    public boolean isPng(){
+        return player.isPlaying();
+    }
+
+    public void pausePlayer(){
+        player.pause();
+    }
+
+    public void seek(int posn){
+        player.seekTo(posn);
+    }
+
+    public void go(){
+        player.start();
+    }
+
+    public void playPrev(){
+        songPosn--;
+        if(songPosn==0)
+            songPosn=songs.size()-1;
+        playSong();
+    }
+
+    public void playNext(){
+        songPosn++;
+        if(songPosn==songs.size())
+            songPosn=0;
+        playSong();
+    }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+    }
 
 }
