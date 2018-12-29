@@ -99,7 +99,7 @@ public class MusicService extends Service implements
                 .setTicker(curson.getTitle())
                 .setOngoing(true)
                 .setContentTitle("Playing")
-  .setContentText(curson.getTitle());
+  .setContentText(curson.getTitle()+" by "+curson.getArtist());
         Notification not = builder.build();
 
         startForeground(1, not);

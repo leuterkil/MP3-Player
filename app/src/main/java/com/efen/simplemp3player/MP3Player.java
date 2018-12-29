@@ -1,5 +1,10 @@
 package com.efen.simplemp3player;
 
+import android.app.ActionBar;
+import android.app.Application;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.widget.MediaController.MediaPlayerControl;
 import android.Manifest;
 import android.content.ComponentName;
@@ -44,6 +49,7 @@ public class MP3Player extends AppCompatActivity implements MediaPlayerControl {
     private ServiceConnection musicConnection;
     private Controller controller;
     private boolean paused=false, playbackPaused=false;
+    Toolbar toolbar;
 
 
 
@@ -57,6 +63,11 @@ public class MP3Player extends AppCompatActivity implements MediaPlayerControl {
 
         songlist = new ArrayList<>();
         songview = findViewById(R.id.song_list);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Main Page");
+        }
         getSonglist();
         Collections.sort(songlist, new Comparator<Song>() {
             @Override
@@ -123,12 +134,18 @@ public class MP3Player extends AppCompatActivity implements MediaPlayerControl {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_player, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.shuffle:
                 //shuffle
                 break;
-            case R.id.end:
+            case R.id.End:
                 stopService(playIntent);
                 musicSrv=null;
                 System.exit(0);
@@ -136,6 +153,8 @@ public class MP3Player extends AppCompatActivity implements MediaPlayerControl {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
 
@@ -177,7 +196,7 @@ public class MP3Player extends AppCompatActivity implements MediaPlayerControl {
                     String thisTitle = musicCursor.getString(titleColumn);
                     String thisArtist = musicCursor.getString(artistColumn);
                     String Album = musicCursor.getString(AlbumColumn);
-                    Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.ic_play);
+                    Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.ic_play2);
 
                     songlist.add(new Song(thisId,thisTitle,thisArtist,Album,image));
                 }
@@ -301,6 +320,7 @@ public class MP3Player extends AppCompatActivity implements MediaPlayerControl {
         controller.setMediaPlayer(this);
         controller.setAnchorView(findViewById(R.id.song_list));
         controller.setEnabled(true);
+
     }
 
     //play next

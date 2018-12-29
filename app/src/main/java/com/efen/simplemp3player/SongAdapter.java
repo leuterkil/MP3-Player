@@ -2,10 +2,13 @@ package com.efen.simplemp3player;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class SongAdapter extends BaseAdapter {
 
@@ -47,15 +52,23 @@ public class SongAdapter extends BaseAdapter {
             TextView artistView = songLay.findViewById(R.id.Artist);
             TextView AlbumView = songLay.findViewById(R.id.Album);
             ImageView CoverArt = songLay.findViewById(R.id.Cover);
+
             //get song using position
             Song currSong = songs.get(position);
             //get title and artist strings
             songView.setText(currSong.getTitle());
             artistView.setText(currSong.getArtist());
             AlbumView.setText(currSong.getAlbum());
+            CoverArt.setImageBitmap(currSong.getCoverArt());
 
-
-                CoverArt.setImageBitmap(currSong.getCoverArt());
+            if(position!=currSong.getId())
+            {
+                songLay.setBackgroundColor(Color.parseColor("#ffffff"));
+            }
+            else
+            {
+                songLay.setBackgroundColor(Color.parseColor("#00aaff"));
+            }
 
 
             //set position as tag
